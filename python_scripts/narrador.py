@@ -182,7 +182,8 @@ def jugar():
         narrar("Error cargando la historia.")
         sys.exit(1)
 
-    escena_actual = "introduccion"
+    # Seleccionar el primer nodo dinámicamente
+    escena_actual = next(iter(historia))  # El primer elemento del diccionario
 
     try:
         while escena_actual:
@@ -198,7 +199,7 @@ def jugar():
             if escena.get('sonido'):
                 reproducir_sonido(escena['sonido'])
 
-                        # Ajustar tono dinámico según la escena
+            # Ajustar tipo de narración según contexto
             tipo_narracion = "normal"
 
             if "cueva" in escena_actual or "oscuro" in escena_actual:
@@ -207,7 +208,6 @@ def jugar():
                 tipo_narracion = "fiesta"
 
             narrar(escena['texto'], tipo=tipo_narracion)
-                                                                
 
             if not escena.get('opciones'):
                 narrar("¡Fin de la historia! Gracias por acompañarme.")
@@ -230,6 +230,7 @@ def jugar():
         narrar("La historia fue interrumpida manualmente.")
     finally:
         detener_sonidos()
+
 
 if __name__ == "__main__":
     jugar()

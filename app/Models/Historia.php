@@ -1,46 +1,28 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Models;
 
-use App\Models\Historia;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class HistoriaController extends Controller
+class Historia extends Model
 {
-    public function index()
+    use HasFactory;
+
+    protected $table = 'historias';
+
+    protected $fillable = [
+        'nombre',
+        'archivo_json', // nombre del json que se genera
+    ];
+
+    public static function rutaPythonScripts()
     {
-        $historias = Historia::all();
-        return view('cuentacuentos.index', compact('historias'));
+        return base_path('python_scripts');
     }
 
-    public function store(Request $request)
+    public function pathCompleto()
     {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'archivo_json' => 'required|file|mimes:json'
-        ]);
-
-        $file = $request->file('archivo_json');
-        $path = $file->storeAs('cuentacuentos', $file->getClientOriginalName());
-
-        Historia::create([
-            'nombre' => $request->nombre,
-            'archivo_json' => $path
-        ]);
-
-        return redirect()->route('cuentacuentos.index')->with('success', 'Historia creada correctamente.');
-    }
-
-    public function seleccionar($id)
-    {
-        $historia = Historia::findOrFail($id);
-
-        $pathOrigen = storage_path('app/' . $historia->archivo_json);
-        $pathDestino = base_path('python_scripts/historia.json');
-
-        copy($pathOrigen, $pathDestino);
-
-        return redirect()->route('cuentacuentos.index')->with('success', 'Historia seleccionada exitosamente.');
+        return self::rutaPythonScripts() . '/' . $this->archivo_json;
     }
 }
