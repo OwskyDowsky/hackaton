@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CuentaCuentosController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,6 +29,8 @@ Route::get('/about', function () {
 Auth::routes(['verify' => false]);
 
 
+Route::get('/cuentacuentos', [CuentaCuentosController::class, 'index'])->name('cuentacuentos.index');
+Route::post('/cuentacuentos/start', [CuentaCuentosController::class, 'start'])->name('cuentacuentos.start');
 Route::group(['namespace' => 'App\Http\Controllers'], function()
 {
     Route::middleware('auth')->group(function () {
