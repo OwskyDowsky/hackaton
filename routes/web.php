@@ -29,6 +29,8 @@ Route::get('/about', function () {
 Auth::routes(['verify' => false]);
 
 
+// Detener el narrador
+Route::post('/cuentacuentos/stop', [CuentaCuentosController::class, 'stop'])->name('cuentacuentos.stop');
 Route::get('/cuentacuentos', [CuentaCuentosController::class, 'index'])->name('cuentacuentos.index');
 Route::post('/cuentacuentos/start', [CuentaCuentosController::class, 'start'])->name('cuentacuentos.start');
 Route::group(['namespace' => 'App\Http\Controllers'], function()
