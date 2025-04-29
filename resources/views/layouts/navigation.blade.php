@@ -53,4 +53,13 @@
             </li>
         </ul>
     </li>
+    <li class="nav-item">
+        <a class="nav-link {{ request()->is('cuentacuentos*') ? 'active' : ''}}" href="{{ route('cuentacuentos.index') }}">
+            <svg class="nav-icon">
+                <use xlink:href="{{ asset('icons/coreui.svg#cil-book') }}"></use> <!-- Elegí un ícono de libro, puedes cambiar -->
+            </svg>
+            {{ __('Cuenta Cuentos') }}
+        </a>
+    </li>
+    
 </ul>
