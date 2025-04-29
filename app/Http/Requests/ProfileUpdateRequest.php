@@ -28,8 +28,11 @@ class ProfileUpdateRequest extends FormRequest
 
         return [
             'name' => 'required',
-            'email' => 'required|email:rfc,dns|unique:users,email,'.$user->id,
-            'username' => 'required|unique:users,username,'.$user->id,
+            'email' => 'required|email:rfc,dns|unique:users,email,' . $user->id,
+            'apellido_paterno' => 'required|string|max:255' . $user->id,
+            'apellido_materno' => 'required|string|max:255' . $user->id,
+            'ci' => 'required|integer|unique:users,ci,' . $user->id,
+            'fecha_nacimiento' => 'required|date',
         ];
     }
 }

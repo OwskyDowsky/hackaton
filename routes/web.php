@@ -1,4 +1,11 @@
 <?php
+use App\Http\Controllers\CursosController;
+use App\Http\Controllers\DiasController;
+use App\Http\Controllers\PermissionsController;
+use App\Http\Controllers\RolesController;
+use App\Models\DiasAsistencias;
+
+use App\Http\Controllers\CuentaCuentosController;
 
 use App\Http\Controllers\CuentaCuentosController;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +50,10 @@ Route::get('/cuentacuentos', [CuentaCuentosController::class, 'index'])->name('c
 Route::post('/cuentacuentos/start', [CuentaCuentosController::class, 'start'])->name('cuentacuentos.start');
 Route::group(['namespace' => 'App\Http\Controllers'], function()
 {
+Route::post('/cuentacuentos/stop', [CuentaCuentosController::class, 'stop'])->name('cuentacuentos.stop');
+
+
+Route::group(['namespace' => 'App\Http\Controllers'], function () {
     Route::middleware('auth')->group(function () {
         /**
          * Home Routes
@@ -50,16 +61,16 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
         /**
          * Role Routes
-         */    
+         */
         Route::resource('roles', RolesController::class);
         /**
          * Permission Routes
-         */    
+         */
         Route::resource('permissions', PermissionsController::class);
         /**
          * User Routes
          */
-        Route::group(['prefix' => 'users'], function() {
+        Route::group(['prefix' => 'users'], function () {
             Route::get('/', [App\Http\Controllers\UsersController::class, 'index'])->name('users.index');
             Route::get('/create', 'UsersController@create')->name('users.create');
             Route::post('/create', 'UsersController@store')->name('users.store');
@@ -68,5 +79,20 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::patch('/{user}/update', 'UsersController@update')->name('users.update');
             Route::delete('/{user}/delete', 'UsersController@destroy')->name('users.destroy');
         });
+
+        //cursos
+        Route::get('/cursos', [CursosController::class, 'index'])->name('cursos.index');
+        Route::get('/cursos/crear', [CursosController::class, 'create'])->name('cursos.create');
+        Route::post('/cursos/crear', [CursosController::class, 'store'])->name('cursos.store');
+        Route::get('/{curso}/edit', [CursosController::class, 'edit'])->name('cursos.edit');
+        Route::patch('/{curso}/update', [CursosController::class, 'update'])->name('cursos.update');
+        Route::get('/cursos/{curso}/estudiantes', [CursosController::class, 'estudiante'])->name('cursos.estudiantes');
+        Route::post('/cursos/{curso}/asignar-estudiantes', [CursosController::class, 'asignarEstudiantes'])->name('cursos.asignarEstudiantes');
+
+        //dia
+        Route::get('/{curso}/dia', [DiasController::class, 'index'])->name('dias.index');
+        Route::get('/{curso}/{dia}/asistencias', [DiasController::class, 'asistencias'])->name('dias.asistencias');
+        Route::post('/{curso}/{dia}/asistencias', [DiasController::class, 'registrarAsistencia'])->name('dias.registrarAsistencia');
+
     });
 });

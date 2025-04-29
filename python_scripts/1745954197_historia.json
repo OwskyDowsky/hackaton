@@ -1,0 +1,14 @@
+{
+    "inicio": {
+        "texto": "dbhsj",
+        "sonido": "cuentacuentos_audio\/1745954197_aldea_duendes.mp3",
+        "opciones": {
+            "sdsd": "escena_1"
+        }
+    },
+    "escena_1": {
+        "texto": "dbshajdbhj",
+        "sonido": "cuentacuentos_audio\/1745954197_rio.mp3",
+        "opciones": []
+    }
+}

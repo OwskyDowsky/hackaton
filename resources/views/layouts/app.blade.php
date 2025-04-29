@@ -8,15 +8,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>
         @if (trim($__env->yieldContent('title')))
-        @yield('title') | {{ config('app.name', 'Laravel') }}
+            @yield('title') | {{ config('app.name', 'Laravel') }}
         @else
-        {{ config('app.name', 'Laravel') }}
+            {{ config('app.name', 'Laravel') }}
         @endif
     </title>
     <meta name="theme-color" content="#ffffff">
     @stack('before-styles')
     @vite('resources/sass/app.scss')
     @stack('after-styles')
+    <!-- Incluir CSS de Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+
 </head>
 
 <body>
@@ -56,6 +59,10 @@
 
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/coreui.bundle.min.js') }}"></script>
+    <!-- recordar colocarlo de manera local -->
+    <!-- Incluir JS de Select2 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
     @vite('resources/js/app.js')
 
     @stack('after-scripts')
