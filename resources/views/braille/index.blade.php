@@ -128,5 +128,12 @@
             console.log(`{!! session('console_log') !!}`);
         </script>
     @endif
+
+    @if(session('pdf'))
+    <a href="{{ asset(session('pdf')) }}" class="btn btn-success mt-2" download>
+        📥 Descargar PDF Braille
+    </a>
+@endif
+
 </div>
 @endsection

@@ -15,46 +15,61 @@ class BrailleReaderController extends Controller
 
     public function start(Request $request)
     {
-        $output = [];
-        $retval = null;
+        $request->validate([
+            'file' => 'required|file|mimes:pdf,jpg,jpeg,png',
+            'mode' => 'required|in:voice,braille',
+            'language' => 'required|in:es,en,pt'
+        ]);
 
-        // Validar archivo
-        if (!$request->hasFile('file')) {
-            return back()->with('error', 'No se subió ningún archivo.');
-        }
+        try {
+            // Subir archivo a storage/app/public/uploads
+            $file = $request->file('file');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('uploads', $filename, 'public');
+            $fullPath = public_path('storage/' . $path);
 
-        $file = $request->file('file');
-        $mode = $request->input('mode');
-        $language = $request->input('language');
+            // Parámetros
+            $mode = $request->mode;
+            $lang = $request->language;
 
-        // Guardar archivo en storage/app/public/braille_inputs
-        $filePath = $file->storeAs('public/braille_inputs', $file->getClientOriginalName());
-        $absoluteFilePath = storage_path('app/' . $filePath);
+            // Configurar entorno Python
+            $pythonPath = 'C:/Python313/python.exe'; // Ajusta según tu entorno
+            $scriptPath = base_path('python_braille/main.py');
 
-        // Ruta a Python y script
-        $pythonPath = 'C:/Python313/python.exe';
-        $scriptPath = base_path('python_braille/main.py');
-        $scriptPath = str_replace('/', '\\', $scriptPath);
-        $absoluteFilePath = str_replace('/', '\\', $absoluteFilePath);
+            // Armar comando
+            $command = "\"$pythonPath\" \"$scriptPath\" --file \"$fullPath\" --mode $mode --lang $lang 2>&1";
 
-        // Comando con argumentos
-        $command = "\"$pythonPath\" \"$scriptPath\" \"$absoluteFilePath\" \"$mode\" \"$language\" 2>&1";
+            // Ejecutar
+            $output = [];
+            $retval = null;
+            exec($command, $output, $retval);
 
-        exec($command, $output, $retval);
+            if ($retval === 0) {
+                $textResult = implode("\n", $output);
 
-        if ($retval === 0) {
-            return back()->with('success', '¡Braille Reader procesado exitosamente!')
-                         ->with('output', implode("\n", $output))
-                         ->with('language', $language)
-                         ->with('console_log', "✅ Comando ejecutado correctamente: $command");
-        } else {
-            $errorMessage = implode("\n", $output);
-            $debugInfo = "❌ Error al ejecutar comando:\n$command\n\nSalida:\n$errorMessage";
+                // Si se generó un PDF, moverlo a storage/public
+                $generatedPdfPath = public_path("outputs/braille_{$lang}.pdf");
+                if (file_exists($generatedPdfPath)) {
+                    $newPdfName = 'braille_' . time() . ".pdf";
+                    $finalPdfPath = public_path('storage/outputs/' . $newPdfName);
+                    @mkdir(public_path('storage/outputs'), 0777, true);
+                    rename($generatedPdfPath, $finalPdfPath);
+                    return back()->with('success', '✅ ¡Archivo procesado con éxito!')
+                                 ->with('output', $textResult)
+                                 ->with('pdf', 'storage/outputs/' . $newPdfName);
+                }
 
-            Log::error('Error al iniciar Braille Reader: ' . $debugInfo);
+                return back()->with('success', '✅ ¡Archivo procesado con éxito!')
+                             ->with('output', $textResult);
+            } else {
+                $errorMessage = implode("\n", $output);
+                Log::error('Error al procesar Braille: ' . $errorMessage);
+                return back()->with('error', '❌ Fallo al ejecutar el script. Detalles: ' . $errorMessage);
+            }
 
-            return back()->with('error', 'No se pudo procesar. Revisa la consola del navegador para más detalles.')
-                         ->with('console_log', $debugInfo);
+        } catch (\Exception $e) {
+            Log::error('Excepción en BrailleReader: ' . $e->getMessage());
+            return back()->with('error', '❌ Excepción: ' . $e->getMessage());
         }
     }
 }
