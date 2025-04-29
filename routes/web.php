@@ -1,26 +1,20 @@
 <?php
+
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
+use App\Http\Controllers\BrailleReaderController;
+use App\Http\Controllers\CuentaCuentosController;
 use App\Http\Controllers\CursosController;
 use App\Http\Controllers\DiasController;
 use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\RolesController;
-use App\Models\DiasAsistencias;
-
-use App\Http\Controllers\CuentaCuentosController;
-
-use App\Http\Controllers\CuentaCuentosController;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\BrailleReaderController;
+use App\Http\Controllers\UsersController;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
 */
 
 Route::get('/', function () {
@@ -36,63 +30,72 @@ Route::get('/about', function () {
  */
 Auth::routes(['verify' => false]);
 
-Route::get('/braille-reader', [BrailleReaderController::class, 'index'])->name('braille.index');
-Route::post('/braille-reader/start', [BrailleReaderController::class, 'start'])->name('braille.start');
-Route::get('/braille-reader/list', [BrailleReaderController::class, 'list'])->name('braille.list');
-Route::post('/braille/stop', [BrailleReaderController::class, 'stop'])->name('braille.stop');
-Route::post('/braille/pause', [BrailleReaderController::class, 'pause'])->name('braille.pause');
-Route::post('/braille/resume', [BrailleReaderController::class, 'resume'])->name('braille.resume');
-Route::get('/braille-outputs', [BrailleReaderController::class, 'outputs'])->name('braille.outputs');
+/**
+ * Braille Reader Routes
+ */
+Route::prefix('braille-reader')->name('braille.')->group(function () {
+    Route::get('/', [BrailleReaderController::class, 'index'])->name('index');
+    Route::post('/start', [BrailleReaderController::class, 'start'])->name('start');
+    Route::get('/list', [BrailleReaderController::class, 'list'])->name('list');
+    Route::get('/outputs', [BrailleReaderController::class, 'outputs'])->name('outputs');
+});
 
-// Detener el narrador
-Route::post('/cuentacuentos/stop', [CuentaCuentosController::class, 'stop'])->name('cuentacuentos.stop');
-Route::get('/cuentacuentos', [CuentaCuentosController::class, 'index'])->name('cuentacuentos.index');
-Route::post('/cuentacuentos/start', [CuentaCuentosController::class, 'start'])->name('cuentacuentos.start');
-Route::group(['namespace' => 'App\Http\Controllers'], function()
-{
-Route::post('/cuentacuentos/stop', [CuentaCuentosController::class, 'stop'])->name('cuentacuentos.stop');
+Route::prefix('braille')->name('braille.')->group(function () {
+    Route::post('/stop', [BrailleReaderController::class, 'stop'])->name('stop');
+    Route::post('/pause', [BrailleReaderController::class, 'pause'])->name('pause');
+    Route::post('/resume', [BrailleReaderController::class, 'resume'])->name('resume');
+});
 
+/**
+ * Cuenta Cuentos Routes
+ */
+Route::prefix('cuentacuentos')->name('cuentacuentos.')->group(function () {
+    Route::get('/', [CuentaCuentosController::class, 'index'])->name('index');
+    Route::post('/start', [CuentaCuentosController::class, 'start'])->name('start');
+    Route::post('/stop', [CuentaCuentosController::class, 'stop'])->name('stop');
+});
 
-Route::group(['namespace' => 'App\Http\Controllers'], function () {
-    Route::middleware('auth')->group(function () {
-        /**
-         * Home Routes
-         */
-        Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
-        /**
-         * Role Routes
-         */
-        Route::resource('roles', RolesController::class);
-        /**
-         * Permission Routes
-         */
-        Route::resource('permissions', PermissionsController::class);
-        /**
-         * User Routes
-         */
-        Route::group(['prefix' => 'users'], function () {
-            Route::get('/', [App\Http\Controllers\UsersController::class, 'index'])->name('users.index');
-            Route::get('/create', 'UsersController@create')->name('users.create');
-            Route::post('/create', 'UsersController@store')->name('users.store');
-            Route::get('/{user}/show', 'UsersController@show')->name('users.show');
-            Route::get('/{user}/edit', 'UsersController@edit')->name('users.edit');
-            Route::patch('/{user}/update', 'UsersController@update')->name('users.update');
-            Route::delete('/{user}/delete', 'UsersController@destroy')->name('users.destroy');
-        });
+/**
+ * Authenticated Routes
+ */
+Route::middleware('auth')->group(function () {
 
-        //cursos
-        Route::get('/cursos', [CursosController::class, 'index'])->name('cursos.index');
-        Route::get('/cursos/crear', [CursosController::class, 'create'])->name('cursos.create');
-        Route::post('/cursos/crear', [CursosController::class, 'store'])->name('cursos.store');
-        Route::get('/{curso}/edit', [CursosController::class, 'edit'])->name('cursos.edit');
-        Route::patch('/{curso}/update', [CursosController::class, 'update'])->name('cursos.update');
-        Route::get('/cursos/{curso}/estudiantes', [CursosController::class, 'estudiante'])->name('cursos.estudiantes');
-        Route::post('/cursos/{curso}/asignar-estudiantes', [CursosController::class, 'asignarEstudiantes'])->name('cursos.asignarEstudiantes');
+    // Dashboard
+    Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
 
-        //dia
-        Route::get('/{curso}/dia', [DiasController::class, 'index'])->name('dias.index');
-        Route::get('/{curso}/{dia}/asistencias', [DiasController::class, 'asistencias'])->name('dias.asistencias');
-        Route::post('/{curso}/{dia}/asistencias', [DiasController::class, 'registrarAsistencia'])->name('dias.registrarAsistencia');
+    // Roles
+    Route::resource('roles', RolesController::class);
 
+    // Permissions
+    Route::resource('permissions', PermissionsController::class);
+
+    // Users
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UsersController::class, 'index'])->name('index');
+        Route::get('/create', [UsersController::class, 'create'])->name('create');
+        Route::post('/create', [UsersController::class, 'store'])->name('store');
+        Route::get('/{user}/show', [UsersController::class, 'show'])->name('show');
+        Route::get('/{user}/edit', [UsersController::class, 'edit'])->name('edit');
+        Route::patch('/{user}/update', [UsersController::class, 'update'])->name('update');
+        Route::delete('/{user}/delete', [UsersController::class, 'destroy'])->name('destroy');
     });
+
+    // Cursos
+    Route::prefix('cursos')->name('cursos.')->group(function () {
+        Route::get('/', [CursosController::class, 'index'])->name('index');
+        Route::get('/crear', [CursosController::class, 'create'])->name('create');
+        Route::post('/crear', [CursosController::class, 'store'])->name('store');
+        Route::get('/{curso}/edit', [CursosController::class, 'edit'])->name('edit');
+        Route::patch('/{curso}/update', [CursosController::class, 'update'])->name('update');
+        Route::get('/{curso}/estudiantes', [CursosController::class, 'estudiante'])->name('estudiantes');
+        Route::post('/{curso}/asignar-estudiantes', [CursosController::class, 'asignarEstudiantes'])->name('asignarEstudiantes');
+        
+        // Días de asistencia relacionados a cursos
+        Route::prefix('{curso}/dia')->group(function () {
+            Route::get('/', [DiasController::class, 'index'])->name('dias.index');
+            Route::get('/{dia}/asistencias', [DiasController::class, 'asistencias'])->name('dias.asistencias');
+            Route::post('/{dia}/asistencias', [DiasController::class, 'registrarAsistencia'])->name('dias.registrarAsistencia');
+        });
+    });
+
 });
