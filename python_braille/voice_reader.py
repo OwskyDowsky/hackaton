@@ -2,6 +2,10 @@ import pyttsx3
 import keyboard
 import threading
 import time
+import os
+import re
+
+STOP_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'storage', 'app', 'public', 'stop.flag'))
 
 def list_voices(engine):
     voices = engine.getProperty('voices')
@@ -14,59 +18,69 @@ def list_voices(engine):
     return voices
 
 def monitor_keyboard(engine, stop_flag):
-    """
-    Monitorea si se presiona ESC para detener la lectura manualmente.
-    """
     while not stop_flag['done'] and engine.isBusy():
         if keyboard.is_pressed('esc'):
-            print("\nSe presionó ESC: deteniendo la lectura...")
+            print("\n[MANUAL] Se presionó ESC: deteniendo la lectura...")
+            engine.stop()
+            break
+        if os.path.exists(STOP_FILE):
+            print("[FLAG] Señal de parada detectada. Deteniendo...")
             engine.stop()
             break
         time.sleep(0.1)
 
+def split_text_by_commas(text):
+    # Solo hacer pausas en comas
+    return [s.strip() + '.' for s in text.split(',') if s.strip()]
+
+def clean_text(text):
+    text = text.replace("Ã±", "ñ").replace("Ã¡", "á").replace("Ã©", "é")
+    text = text.replace("Ã­", "í").replace("Ã³", "ó").replace("Ãº", "ú")
+    text = text.replace("â", "-").replace("â", '"').replace("â", '"')
+    
+    # Elimina líneas irrelevantes
+    pattern = r"(Leyendo texto en voz\.\.\.|Voces disponibles en el sistema:|^\d+\.\s.*\(Desconocido\)|^\[INFO\].*)"
+    lines = text.splitlines()
+    cleaned_lines = [line for line in lines if not re.search(pattern, line)]
+
+    return " ".join(cleaned_lines)
+
 def read_text(text, preferred_language='es'):
+    if os.path.exists(STOP_FILE):
+        os.remove(STOP_FILE)
+
     engine = pyttsx3.init()
     stop_flag = {'done': False}
     voices = list_voices(engine)
-    selected_voice = None
-
-    def matches_language(voice, lang_code):
-        voice_lang = voice.languages[0] if voice.languages else ""
-        return lang_code in (voice_lang.decode('utf-8') if isinstance(voice_lang, bytes) else voice_lang)
-
-    # Selección de voz
-    if preferred_language == 'es':
-        for voice in voices:
-            if 'Sabina' in voice.name:
-                selected_voice = voice
-                break
-        if not selected_voice:
-            selected_voice = next((v for v in voices if matches_language(v, 'es')), None)
-    elif preferred_language == 'en':
-        selected_voice = next((v for v in voices if matches_language(v, 'en')), None)
-    elif preferred_language == 'pt':
-        selected_voice = next((v for v in voices if matches_language(v, 'pt')), None)
+    selected_voice = next((v for v in voices if 'Sabina' in v.name), None)
 
     if selected_voice:
         engine.setProperty('voice', selected_voice.id)
-        print(f"Usando voz automática: {selected_voice.name}")
+        print(f"[INFO] Usando voz Sabina: {selected_voice.name}")
     else:
-        print("No se encontró voz específica, usando predeterminada.")
+        print("[WARN] Voz Sabina no encontrada. Usando predeterminada.")
 
     engine.setProperty('rate', 150)
     engine.setProperty('volume', 1.0)
 
+    text = clean_text(text)
+    fragments = split_text_by_commas(text)
+
     try:
-        # Inicia hilo para permitir interrupción por teclado
         keyboard_thread = threading.Thread(target=monitor_keyboard, args=(engine, stop_flag))
         keyboard_thread.start()
 
-        engine.say(text)
-        engine.runAndWait()
+        for fragment in fragments:
+            if stop_flag['done'] or os.path.exists(STOP_FILE):
+                break
+            engine.say(fragment)
+            engine.runAndWait()
 
-        stop_flag['done'] = True  # Marca que ya se terminó
-        keyboard_thread.join(timeout=1.0)  # Asegura que el hilo termine
+        stop_flag['done'] = True
+        keyboard_thread.join(timeout=1.0)
+
     finally:
         engine.stop()
-        del engine
-        print("🛑 Narración finalizada y motor de voz liberado.")
+        if os.path.exists(STOP_FILE):
+            os.remove(STOP_FILE)
+        print("[INFO] Lectura finalizada correctamente.")
