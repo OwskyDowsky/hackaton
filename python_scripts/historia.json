@@ -1,7 +1,7 @@
 {
     "inicio": {
       "texto": "Despiertas en un bosque encantado. Escuchas aves mágicas y el susurro del viento. Si quieres empezar la aventura, di 'caminar'. Si prefieres quedarte donde estás, di 'esperar'. ¿Qué decides?",
-      "sonido": "sonidos/bosque_magico.mp3",
+      "sonido": "cuentacuentos_audio/bosque_magico.mp3",
       "opciones": {
         "caminar": "seguir_caminando",
         "esperar": "final_perdido"
@@ -9,7 +9,7 @@
     },
     "seguir_caminando": {
       "texto": "Caminas entre árboles de colores brillantes. Más adelante, ves una cueva misteriosa. Si deseas entrar a la cueva, di 'entrar'. Si prefieres seguir caminando y evitarla, di 'ignorar'. ¿Qué quieres hacer?",
-      "sonido": "sonidos/caminata_bosque.mp3",
+      "sonido": "cuentacuentos_audio/caminata_bosque.mp3",
       "opciones": {
         "entrar": "investigar_cueva",
         "ignorar": "ignorar_cueva"
@@ -17,7 +17,7 @@
     },
     "investigar_cueva": {
       "texto": "Te adentras en la cueva oscura. Hace frío y escuchas gotear el agua. Encuentras un cofre dorado. Si quieres abrir el cofre, di 'abrir cofre'. Si tienes miedo y prefieres no abrirlo, di 'no abrir'. ¿Qué decides?",
-      "sonido": "sonidos/cueva.mp3",
+      "sonido": "cuentacuentos_audio/cueva.mp3",
       "opciones": {
         "abrir cofre": "abrir_cofre",
         "no abrir": "final_perdido"
@@ -25,7 +25,7 @@
     },
     "ignorar_cueva": {
       "texto": "Decides rodear la cueva. Más adelante descubres un río brillante que parece estar iluminado por estrellas. Si quieres seguir el río, di 'seguir río'. Si prefieres quedarte, di 'no seguir'. ¿Qué haces?",
-      "sonido": "sonidos/rio.mp3",
+      "sonido": "cuentacuentos_audio/rio.mp3",
       "opciones": {
         "seguir río": "seguir_rio",
         "no seguir": "final_perdido"
@@ -33,14 +33,14 @@
     },
     "abrir_cofre": {
       "texto": "¡Encuentras un antiguo mapa mágico que muestra el camino hacia un castillo escondido! Si quieres seguir el mapa y buscar el castillo, di 'seguir mapa'.",
-      "sonido": "sonidos/abrir_cofre.mp3",
+      "sonido": "cuentacuentos_audio/abrir_cofre.mp3",
       "opciones": {
         "seguir mapa": "final_castillo"
       }
     },
     "seguir_rio": {
       "texto": "Sigues el curso del río y llegas a una aldea llena de duendes sonrientes. Si quieres hablar con los duendes, di 'hablar duendes'. Si prefieres no detenerte y seguir tu camino, di 'seguir solo'.",
-      "sonido": "sonidos/aldea_duendes.mp3",
+      "sonido": "cuentacuentos_audio/aldea_duendes.mp3",
       "opciones": {
         "hablar duendes": "hablar_duendes",
         "seguir solo": "ignorar_duendes"
@@ -48,26 +48,26 @@
     },
     "hablar_duendes": {
       "texto": "Los duendes celebran tu llegada. Te entregan una llave dorada que abrirá las puertas del castillo mágico. Si quieres dirigirte al castillo, di 'ir al castillo'.",
-      "sonido": "sonidos/duendes_hablando.mp3",
+      "sonido": "cuentacuentos_audio/duendes_hablando.mp3",
       "opciones": {
         "ir al castillo": "final_castillo"
       }
     },
     "ignorar_duendes": {
       "texto": "Decides no detenerte. El bosque se torna más oscuro y denso, pero a lo lejos logras ver el castillo iluminado. Si quieres acercarte, di 'ir al castillo'.",
-      "sonido": "sonidos/camino_solitario.mp3",
+      "sonido": "cuentacuentos_audio/camino_solitario.mp3",
       "opciones": {
         "ir al castillo": "final_castillo"
       }
     },
     "final_castillo": {
       "texto": "¡Llegas al castillo mágico! Una gran fiesta te espera en honor a tu valentía. Hay música, luces y magia en el aire. ¡Has completado tu aventura!",
-      "sonido": "sonidos/castillo_fiesta.mp3",
+      "sonido": "cuentacuentos_audio/castillo_fiesta.mp3",
       "opciones": {}
     },
     "final_perdido": {
       "texto": "Te pierdes en el bosque y, aunque te sientes un poco triste, sabes que pronto vivirás nuevas aventuras mágicas. ¡Hasta la próxima!",
-      "sonido": "sonidos/bosque.mp3",
+      "sonido": "cuentacuentos_audio/bosque.mp3",
       "opciones": {}
     }
   }

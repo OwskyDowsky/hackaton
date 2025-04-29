@@ -12,7 +12,8 @@
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.0",
         "spatie/laravel-medialibrary": "^10.0",
-        "spatie/laravel-permission": "^5.0" 
+        "spatie/laravel-permission": "^5.0",
+        "symfony/process": "^6.4"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.8",
