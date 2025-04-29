@@ -1,0 +1,21 @@
+{
+    "inicio": {
+        "texto": "sdabhsabhd",
+        "sonido": null,
+        "opciones": {
+            "sss": "escena_1"
+        }
+    },
+    "escena_1": {
+        "texto": "hhhhhh",
+        "sonido": null,
+        "opciones": {
+            "nnnnn": "escena_2"
+        }
+    },
+    "escena_2": {
+        "texto": "aaaaasas",
+        "sonido": null,
+        "opciones": []
+    }
+}

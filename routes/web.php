@@ -4,7 +4,7 @@ use App\Http\Controllers\CuentaCuentosController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BrailleReaderController;
-
+use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -34,10 +34,36 @@ Route::post('/braille-reader/start', [BrailleReaderController::class, 'start'])-
 Route::get('/braille-reader/list', [BrailleReaderController::class, 'list'])->name('braille.list');
 
 
-// Detener el narrador
-Route::post('/cuentacuentos/stop', [CuentaCuentosController::class, 'stop'])->name('cuentacuentos.stop');
+
+
+
+Route::get('/cuentacuentos/escena', function () {
+    $id = request()->query('id');     // <-- Cambio aquí
+    $nivel = request()->query('nivel', 0); // <-- Y aquí
+
+    if (!$id) {
+        return response('Parámetro "id" faltante.', 400);
+    }
+
+    return view('cuentacuentos.partials.escena', compact('id', 'nivel'));
+})->name('cuentacuentos.escena');
+
+// Gestión de historias
 Route::get('/cuentacuentos', [CuentaCuentosController::class, 'index'])->name('cuentacuentos.index');
+Route::get('/cuentacuentos/create', [CuentaCuentosController::class, 'create'])->name('cuentacuentos.create');
+Route::post('/cuentacuentos', [CuentaCuentosController::class, 'store'])->name('cuentacuentos.store');
+Route::get('/cuentacuentos/{id}/edit', [CuentaCuentosController::class, 'edit'])->name('cuentacuentos.edit');
+Route::put('/cuentacuentos/{id}', [CuentaCuentosController::class, 'update'])->name('cuentacuentos.update');
+
+Route::delete('/cuentacuentos/{id}', [CuentaCuentosController::class, 'destroy'])->name('cuentacuentos.destroy');
+
+// Para seleccionar una historia y control del narrador
+Route::post('/cuentacuentos/seleccionar/{id}', [CuentaCuentosController::class, 'seleccionar'])->name('cuentacuentos.seleccionar');
 Route::post('/cuentacuentos/start', [CuentaCuentosController::class, 'start'])->name('cuentacuentos.start');
+Route::post('/cuentacuentos/stop', [CuentaCuentosController::class, 'stop'])->name('cuentacuentos.stop');
+
+
+
 Route::group(['namespace' => 'App\Http\Controllers'], function()
 {
     Route::middleware('auth')->group(function () {

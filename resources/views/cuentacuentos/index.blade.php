@@ -1,89 +1,92 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container text-center">
-    <h1 class="mb-4">🎙️ Bienvenido al CuentaCuentos</h1>
+<div class="container">
+    <h1 class="text-center mb-4">🎙️ CuentaCuentos - Historias Interactivas</h1>
 
-    {{-- Mensajes de éxito o error --}}
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success text-center">{{ session('success') }}</div>
     @elseif(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
+        <div class="alert alert-danger text-center">{{ session('error') }}</div>
     @endif
 
-    {{-- Botones de iniciar y detener narrador --}}
-    <div class="mb-4">
-        <form method="POST" action="{{ route('cuentacuentos.start') }}" class="d-inline">
-            @csrf
-            <button type="submit" class="btn btn-primary btn-lg">
-                Iniciar Aventura ✨
-            </button>
-        </form>
-
-        <form method="POST" action="{{ route('cuentacuentos.stop') }}" class="d-inline ms-2">
-            @csrf
-            <button type="submit" class="btn btn-danger btn-lg">
-                Detener Narrador 🛑
-            </button>
-        </form>
-    </div>
-
-    {{-- Avance actual --}}
-    @php
-        $avancePath = storage_path('app/avance.txt');
-        $avance = file_exists($avancePath) ? file_get_contents($avancePath) : 0;
-    @endphp
-
-    <div class="mt-4">
-        <h4>Avance actual: {{ $avance }}%</h4>
-        <div class="progress" style="height: 25px;">
-            <div class="progress-bar" role="progressbar" style="width: {{ $avance }}%;" aria-valuenow="{{ $avance }}" aria-valuemin="0" aria-valuemax="100">
-                {{ $avance }}%
-            </div>
+    {{-- Buscador --}}
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <form method="GET" action="{{ route('cuentacuentos.index') }}" class="d-flex">
+                <input type="text" name="search" value="{{ request('search') }}" class="form-control me-2" placeholder="🔍 Buscar historia por nombre...">
+                <button type="submit" class="btn btn-outline-primary">Buscar</button>
+            </form>
         </div>
     </div>
 
-    {{-- Selección de historias disponibles --}}
-    <hr class="my-5">
+    {{-- Botón crear historia --}}
+    <div class="text-center mb-4">
+        <a href="{{ route('cuentacuentos.create') }}" class="btn btn-success btn-lg">
+            ➕ Nueva Historia
+        </a>
+    </div>
 
-    <h2 class="mb-3">📚 Seleccionar una Historia</h2>
-
-    @if(isset($historias) && $historias->count())
-        <div class="list-group">
+    @if($historias->count())
+        <div class="row">
             @foreach($historias as $historia)
-                <form action="{{ route('historias.seleccionar', $historia->id) }}" method="POST" class="d-inline">
-                    @csrf
-                    <button type="submit" class="list-group-item list-group-item-action mb-2">
-                        {{ $historia->nombre }}
-                    </button>
-                </form>
+                <div class="col-md-6">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">{{ $historia->nombre }}</h4>
+
+                            <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
+                                <form method="POST" action="{{ route('cuentacuentos.seleccionar', $historia->id) }}">
+                                    @csrf
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        📖 Seleccionar
+                                    </button>
+                                </form>
+
+                                <a href="{{ route('cuentacuentos.edit', $historia->id) }}" class="btn btn-warning btn-sm">
+                                    ✏️ Editar
+                                </a>
+
+                                <form method="POST" action="{{ route('cuentacuentos.destroy', $historia->id) }}" onsubmit="return confirm('¿Estás seguro de eliminar esta historia?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        🗑️ Eliminar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             @endforeach
         </div>
+
+        {{-- Paginación --}}
+        <div class="d-flex justify-content-center mt-4">
+            {{ $historias->appends(['search' => request('search')])->links() }}
+        </div>
+
+        {{-- Botones globales para narrador --}}
+        <div class="text-center mt-5">
+            <form method="POST" action="{{ route('cuentacuentos.start') }}" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-success btn-lg">
+                    ▶️ Iniciar Narrador
+                </button>
+            </form>
+
+            <form method="POST" action="{{ route('cuentacuentos.stop') }}" class="d-inline ms-3">
+                @csrf
+                <button type="submit" class="btn btn-danger btn-lg">
+                    ⏹️ Detener Narrador
+                </button>
+            </form>
+        </div>
+
     @else
-        <p>No hay historias disponibles aún.</p>
+        <div class="alert alert-info text-center">
+            No hay historias registradas aún. ¡Crea tu primera historia!
+        </div>
     @endif
-
-    {{-- Formulario para agregar nueva historia --}}
-    <hr class="my-5">
-
-    <h2 class="mb-3">➕ Agregar Nueva Historia</h2>
-
-    <form action="{{ route('historias.store') }}" method="POST" enctype="multipart/form-data" class="text-start">
-        @csrf
-        <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre de la Historia:</label>
-            <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Ejemplo: La Aventura en el Bosque" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="archivo_json" class="form-label">Archivo JSON de la Historia:</label>
-            <input type="file" name="archivo_json" id="archivo_json" class="form-control" accept=".json" required>
-        </div>
-
-        <button type="submit" class="btn btn-success">
-            Guardar Nueva Historia 📖
-        </button>
-    </form>
-
 </div>
 @endsection
