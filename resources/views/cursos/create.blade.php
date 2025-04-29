@@ -15,10 +15,6 @@
                     @include('layouts.includes.messages')
                 </div>
 
-                <div class="mb-2 text-start">
-                    <a href="{{ route('cursos.index') }}" class="btn btn-primary btn-sm float-right">Volver atras</a>
-                </div>
-
                 <!-- Formulario para agregar nuevo curso -->
                 <form action="{{ route('cursos.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf

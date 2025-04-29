@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id(); // ID único para cada registro
             $table->foreignId('curso_id')->constrained('cursos'); // Relación con la tabla 'cursos', clave foránea
             $table->foreignId('estudiante_id')->constrained('users'); // Relación con la tabla 'estudiantes', clave foránea
+            $table->foreignId('dia_id')->constrained('dias_asistencias');
             $table->string('asistencia'); 
             $table->timestamps(); // Para las columnas created_at y updated_at
         });

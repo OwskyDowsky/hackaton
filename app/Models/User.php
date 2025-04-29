@@ -56,4 +56,14 @@ class User extends Authenticatable implements HasMedia
         'password',
         'remember_token',
     ];
+
+    public function cursos()
+    {
+        return $this->belongsToMany(Cursos::class, 'curso_user'); // Ajusta el nombre de la tabla pivote si es necesario
+    }
+
+    public function cegueras()
+    {
+        return $this->hasMany(CeguerasEstudiantes::class, 'usuario_id');
+    }
 }

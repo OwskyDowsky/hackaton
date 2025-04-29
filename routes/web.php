@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\CuentaCuentosController;
 use App\Http\Controllers\CursosController;
+use App\Http\Controllers\DiasController;
 use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\RolesController;
+use App\Models\DiasAsistencias;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -69,5 +71,15 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
         Route::get('/cursos', [CursosController::class, 'index'])->name('cursos.index');
         Route::get('/cursos/crear', [CursosController::class, 'create'])->name('cursos.create');
         Route::post('/cursos/crear', [CursosController::class, 'store'])->name('cursos.store');
+        Route::get('/{curso}/edit', [CursosController::class, 'edit'])->name('cursos.edit');
+        Route::patch('/{curso}/update', [CursosController::class, 'update'])->name('cursos.update');
+        Route::get('/cursos/{curso}/estudiantes', [CursosController::class, 'estudiante'])->name('cursos.estudiantes');
+        Route::post('/cursos/{curso}/asignar-estudiantes', [CursosController::class, 'asignarEstudiantes'])->name('cursos.asignarEstudiantes');
+
+        //dia
+        Route::get('/{curso}/dia', [DiasController::class, 'index'])->name('dias.index');
+        Route::get('/{curso}/{dia}/asistencias', [DiasController::class, 'asistencias'])->name('dias.asistencias');
+        Route::post('/{curso}/{dia}/asistencias', [DiasController::class, 'registrarAsistencia'])->name('dias.registrarAsistencia');
+
     });
 });
