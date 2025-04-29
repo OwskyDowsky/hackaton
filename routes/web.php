@@ -1,14 +1,6 @@
 <?php
 
 use App\Http\Controllers\CuentaCuentosController;
-<<<<<<< HEAD
-=======
-use App\Http\Controllers\CursosController;
-use App\Http\Controllers\DiasController;
-use App\Http\Controllers\PermissionsController;
-use App\Http\Controllers\RolesController;
-use App\Models\DiasAsistencias;
->>>>>>> 36b2784 (Administrador)
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BrailleReaderController;
@@ -100,23 +92,5 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
             Route::patch('/{user}/update', 'UsersController@update')->name('users.update');
             Route::delete('/{user}/delete', 'UsersController@destroy')->name('users.destroy');
         });
-<<<<<<< HEAD
-=======
-
-        //cursos
-        Route::get('/cursos', [CursosController::class, 'index'])->name('cursos.index');
-        Route::get('/cursos/crear', [CursosController::class, 'create'])->name('cursos.create');
-        Route::post('/cursos/crear', [CursosController::class, 'store'])->name('cursos.store');
-        Route::get('/{curso}/edit', [CursosController::class, 'edit'])->name('cursos.edit');
-        Route::patch('/{curso}/update', [CursosController::class, 'update'])->name('cursos.update');
-        Route::get('/cursos/{curso}/estudiantes', [CursosController::class, 'estudiante'])->name('cursos.estudiantes');
-        Route::post('/cursos/{curso}/asignar-estudiantes', [CursosController::class, 'asignarEstudiantes'])->name('cursos.asignarEstudiantes');
-
-        //dia
-        Route::get('/{curso}/dia', [DiasController::class, 'index'])->name('dias.index');
-        Route::get('/{curso}/{dia}/asistencias', [DiasController::class, 'asistencias'])->name('dias.asistencias');
-        Route::post('/{curso}/{dia}/asistencias', [DiasController::class, 'registrarAsistencia'])->name('dias.registrarAsistencia');
-
->>>>>>> 36b2784 (Administrador)
     });
 });
