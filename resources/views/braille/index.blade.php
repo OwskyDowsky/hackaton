@@ -46,35 +46,40 @@
             </select>
         </div>
 
-        <button type="submit" class="btn btn-primary">Procesar</button>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary" id="procesarBtn">Procesar</button>
+            <button type="button" class="btn btn-danger" id="detenerBtnFormulario" style="display: none;">⛔ Detener lectura</button>
+            <button type="button" class="btn btn-warning" id="pausarBtnFormulario" style="display: none;">⏸️ Pausar</button>
+            <button type="button" class="btn btn-success" id="reanudarBtnFormulario" style="display: none;">▶️ Reanudar</button>
+        </div>
     </form>
 
     @if(session('output'))
         <div class="alert alert-info mt-4">
             <h5>Texto procesado:</h5>
             <pre id="textoProcesado">{{ session('output') }}</pre>
-            <button id="releerBtn" class="btn btn-secondary mt-2">🔁 Releer</button>
+
+            <div class="d-flex gap-2 mt-2">
+                <button id="releerBtn" class="btn btn-secondary">🔁 Releer</button>
+            </div>
         </div>
     @endif
 
     @if(session('pdf'))
-        <a href="{{ asset(session('pdf')) }}" class="btn btn-success mt-3" download>
-            📥 Descargar PDF Braille
-        </a>
+        <div class="mt-4">
+            <a href="{{ asset(session('pdf')) }}" class="btn btn-success mb-2" download>
+                📥 Descargar PDF Braille
+            </a>
 
-        <a href="{{ route('braille.list') }}" class="btn btn-outline-secondary mt-3">
-            📂 Ver todos los PDFs generados
-        </a>
-    @endif
-
-    @if(session('console_log'))
-        <script>
-            console.log(`{!! session('console_log') !!}`);
-        </script>
+            <a href="{{ route('braille.list') }}" class="btn btn-outline-secondary">
+                📚 Ver todos los libros Braille generados
+            </a>
+        </div>
     @endif
 
     <script>
         let selectedVoice = null;
+        let utterance = null;
 
         function cargarVoces() {
             const voices = speechSynthesis.getVoices();
@@ -89,7 +94,7 @@
             });
 
             if (voices.length > 0) {
-                selectedVoice = voices[0];
+                selectedVoice = voices.find(v => v.name.includes('Sabina')) || voices[0];
             }
 
             voiceSelect.addEventListener('change', () => {
@@ -98,14 +103,30 @@
         }
 
         function leerTexto(texto) {
-            if (!selectedVoice) {
-                console.error('No hay voz seleccionada.');
-                return;
-            }
-            const utterance = new SpeechSynthesisUtterance(texto);
+            if (!selectedVoice) return;
+            detenerLectura();
+            utterance = new SpeechSynthesisUtterance(texto);
             utterance.voice = selectedVoice;
             utterance.rate = 1;
             speechSynthesis.speak(utterance);
+        }
+
+        function detenerLectura() {
+            if (speechSynthesis.speaking || speechSynthesis.pending) {
+                speechSynthesis.cancel();
+            }
+        }
+
+        function pausarLectura() {
+            if (speechSynthesis.speaking && !speechSynthesis.paused) {
+                speechSynthesis.pause();
+            }
+        }
+
+        function reanudarLectura() {
+            if (speechSynthesis.paused) {
+                speechSynthesis.resume();
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -116,6 +137,9 @@
 
             const modeSelect = document.getElementById('modeSelect');
             const voiceSelectorContainer = document.getElementById('voiceSelectorContainer');
+            const detenerBtnFormulario = document.getElementById('detenerBtnFormulario');
+            const pausarBtnFormulario = document.getElementById('pausarBtnFormulario');
+            const reanudarBtnFormulario = document.getElementById('reanudarBtnFormulario');
 
             modeSelect.addEventListener('change', function() {
                 if (modeSelect.value === 'voice') {
@@ -123,6 +147,26 @@
                 } else {
                     voiceSelectorContainer.style.display = 'none';
                 }
+            });
+
+            document.getElementById('formulario').addEventListener('submit', function () {
+                if (modeSelect.value === 'voice') {
+                    detenerBtnFormulario.style.display = 'inline-block';
+                    pausarBtnFormulario.style.display = 'inline-block';
+                    reanudarBtnFormulario.style.display = 'inline-block';
+                }
+            });
+
+            document.getElementById('detenerBtnFormulario').addEventListener('click', function () {
+                detenerLectura();
+            });
+
+            document.getElementById('pausarBtnFormulario').addEventListener('click', function () {
+                pausarLectura();
+            });
+
+            document.getElementById('reanudarBtnFormulario').addEventListener('click', function () {
+                reanudarLectura();
             });
 
             @if(session('output'))
@@ -135,6 +179,30 @@
                 leerTexto(texto);
             });
         });
+
+        document.getElementById('detenerBtnFormulario')?.addEventListener('click', function () {
+    fetch('{{ route('braille.stop') }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            console.log('[✅] Señal de detener enviada correctamente');
+        } else {
+            console.error('[❌] Error al detener:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('[❌] Fallo de red o servidor al detener:', error);
+    });
+});
+
     </script>
+    
 </div>
 @endsection

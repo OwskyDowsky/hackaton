@@ -22,6 +22,8 @@ class BrailleReaderController extends Controller
         ]);
 
         try {
+            set_time_limit(300); // ⏱ Aumentar tiempo de ejecución
+
             // Subir archivo a storage/app/public/uploads
             $file = $request->file('file');
             $filename = time() . '_' . $file->getClientOriginalName();
@@ -33,7 +35,7 @@ class BrailleReaderController extends Controller
             $lang = $request->language;
 
             // Configurar entorno Python
-            $pythonPath = 'C:/Python313/python.exe'; // Ajusta según tu entorno
+            $pythonPath = 'C:/Python313/python.exe'; // ⚠ Ajusta según tu máquina
             $scriptPath = base_path('python_braille/main.py');
 
             // Armar comando
@@ -47,20 +49,29 @@ class BrailleReaderController extends Controller
             if ($retval === 0) {
                 $textResult = implode("\n", $output);
 
-                // Si se generó un PDF, moverlo a storage/public
+                // Buscar si se generó un PDF
                 $generatedPdfPath = public_path("outputs/braille_{$lang}.pdf");
                 if (file_exists($generatedPdfPath)) {
                     $newPdfName = 'braille_' . time() . ".pdf";
-                    $finalPdfPath = public_path('storage/outputs/' . $newPdfName);
-                    @mkdir(public_path('storage/outputs'), 0777, true);
+
+                    // Asegurar que exista storage/outputs
+                    $storageOutputDir = public_path('storage/outputs');
+                    if (!file_exists($storageOutputDir)) {
+                        mkdir($storageOutputDir, 0777, true);
+                    }
+
+                    $finalPdfPath = $storageOutputDir . '/' . $newPdfName;
                     rename($generatedPdfPath, $finalPdfPath);
-                    return back()->with('success', '✅ ¡Archivo procesado con éxito!')
-                                 ->with('output', $textResult)
-                                 ->with('pdf', 'storage/outputs/' . $newPdfName);
+
+                    return back()
+                        ->with('success', '✅ ¡Archivo procesado con éxito!')
+                        ->with('output', $textResult)
+                        ->with('pdf', 'storage/outputs/' . $newPdfName);
                 }
 
-                return back()->with('success', '✅ ¡Archivo procesado con éxito!')
-                             ->with('output', $textResult);
+                return back()
+                    ->with('success', '✅ ¡Archivo procesado con éxito!')
+                    ->with('output', $textResult);
             } else {
                 $errorMessage = implode("\n", $output);
                 Log::error('Error al procesar Braille: ' . $errorMessage);
@@ -72,4 +83,52 @@ class BrailleReaderController extends Controller
             return back()->with('error', '❌ Excepción: ' . $e->getMessage());
         }
     }
+
+    public function list()
+    {
+        $pdfDirectory = public_path('storage/outputs');
+        $files = [];
+
+        if (file_exists($pdfDirectory)) {
+            foreach (scandir($pdfDirectory) as $file) {
+                if (pathinfo($file, PATHINFO_EXTENSION) === 'pdf') {
+                    $files[] = 'storage/outputs/' . $file;
+                }
+            }
+        }
+
+        return view('braille.list', compact('files'));
+    }
+
+    public function stop()
+    {
+        try {
+            file_put_contents(storage_path('app/public/stop.flag'), 'stop');
+            return response()->json(['status' => 'ok', 'action' => 'stop']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al detener'], 500);
+        }
+    }
+    
+    public function pause()
+    {
+        try {
+            file_put_contents(storage_path('app/public/pause.flag'), 'pause');
+            return response()->json(['status' => 'ok', 'action' => 'pause']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al pausar'], 500);
+        }
+    }
+    
+    public function resume()
+    {
+        try {
+            file_put_contents(storage_path('app/public/resume.flag'), 'resume');
+            return response()->json(['status' => 'ok', 'action' => 'resume']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al reanudar'], 500);
+        }
+    }
+    
+
 }
