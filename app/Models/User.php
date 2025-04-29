@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\MediaLibrary\HasMedia;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasMedia
@@ -35,11 +36,15 @@ class User extends Authenticatable implements HasMedia
     ];
 
     protected $fillable = [
-        'first_name',
-        'last_name',
+        'apellido_paterno',
+        'apellido_materno',
+        'ci',
+        'fecha_nacimiento',
         'name',
         'email',
         'password',
+        'celular',
+        'genero',
     ];
 
     /**
@@ -48,6 +53,7 @@ class User extends Authenticatable implements HasMedia
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 }

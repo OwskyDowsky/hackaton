@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreUserRequest extends FormRequest
@@ -24,9 +25,19 @@ class StoreUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'email' => 'required|email:rfc,dns|unique:users,email',
-            'username' => 'required|unique:users,username',
+            'name' => 'required|string|min:3|max:255',  // Mínimo 3 caracteres
+            'apellido_paterno' => 'required|string|min:3|max:255',  // Mínimo 3 caracteres
+            'apellido_materno' => 'required|string|min:3|max:255',  // Mínimo 3 caracteres
+            'ci' => 'required|digits:8|integer',  // Exactamente 8 dígitos
+            'fecha_nacimiento' => [
+                'required',
+                'date',
+                'before:' . Carbon::now()->toDateString(),  // La fecha debe ser antes del día de hoy
+            ],
+            'email' => 'required|email:rfc,dns|unique:users,email',  // Email único
+            'password' => 'required|string|min:6',  // Contraseña mínima de 6 caracteres
+            'celular' => 'required|digits:8|integer',
+            'genero' => 'required',
         ];
     }
 }

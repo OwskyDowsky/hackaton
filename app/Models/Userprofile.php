@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Models;
+use Illuminate\Database\Eloquent\Model;
 
-class Userprofile extends BaseModel
+class Userprofile extends Model
 {
     protected $dates = [
         'date_of_birth',
