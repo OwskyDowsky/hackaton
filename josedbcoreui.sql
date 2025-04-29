@@ -206,25 +206,18 @@ CREATE TABLE `users` (
 -- Volcado de datos para la tabla `users`
 --
 
+-- Volcado de datos para la tabla `users`
 INSERT INTO `users` (`id`, `name`, `first_name`, `last_name`, `username`, `email`, `mobile`, `gender`, `date_of_birth`, `email_verified_at`, `password`, `avatar`, `status`, `remember_token`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, 'Super Admin', 'Super', 'Admin', '100001', 'super@admin.com', '+1-918-730-8429', 'Other', '1985-12-23', '2024-10-18 01:53:08', '$2y$10$rZQ.D/Ko/MQJAaRw/rHnN.ub4U.ki95E/S5X/3Dg1OlO7J47UsC4W', 'img/default-avatar.jpg', 1, NULL, '2024-10-18 01:53:08', '2024-10-18 01:53:08', NULL),
-(2, 'Admin Istrator', 'Admin', 'Istrator', '100002', 'admin@admin.com', '+1.580.215.7424', 'Male', '1979-10-23', '2024-10-18 01:53:08', '$2y$10$A8s3zbHSK3JfxuN4J6ZKwuvCBM/MjO9du1yi/mKDC3C7/ehIVaGSy', 'img/default-avatar.jpg', 1, NULL, '2024-10-18 01:53:08', '2024-10-18 01:53:08', NULL),
+(2, 'Admin Istrator', 'Admin', 'Istrator', '100002', 'admin@admin.com', '+1.580.215.7424', 'Male', '1979-10-23', '2024-10-18 01:53:08', '$2y$10$A8s3zbHSK3JfxuN4J6ZKwuvCBM/MjO9du1yi/mKDC3C7/ehIVaGSy', 'img/default-avatar.jpg', 1, NULL, '2024-10-18 01:53:08', '2024-10-18 01:53:08', NULL);
 
--- Índices para tablas volcadas
---
+-- Hasta aquí terminamos el INSERT (agregado el punto y coma `;` correcto)
 
---
--- Indices de la tabla `categorias`
---
-
---
 -- Indices de la tabla `failed_jobs`
---
 ALTER TABLE `failed_jobs`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
 
---
 -- Indices de la tabla `images`
 --
 
