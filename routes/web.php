@@ -31,6 +31,8 @@ Auth::routes(['verify' => false]);
 
 Route::get('/braille-reader', [BrailleReaderController::class, 'index'])->name('braille.index');
 Route::post('/braille-reader/start', [BrailleReaderController::class, 'start'])->name('braille.start');
+Route::get('/braille-reader/list', [BrailleReaderController::class, 'list'])->name('braille.list');
+
 
 // Detener el narrador
 Route::post('/cuentacuentos/stop', [CuentaCuentosController::class, 'stop'])->name('cuentacuentos.stop');
