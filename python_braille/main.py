@@ -12,7 +12,7 @@ def main():
     parser.add_argument('--file', required=True, help="Ruta del archivo (imagen o PDF)")
     parser.add_argument('--mode', required=True, choices=['voice', 'braille'], help="Modo: 'voice' o 'braille'")
     parser.add_argument('--lang', required=True, choices=['es', 'en', 'pt'], help="Idioma de destino: es, en o pt")
-    parser.add_argument('--output', help="Nombre de archivo de salida (sin extensión)", default="braille_book")
+    parser.add_argument('--output', required=True, help="Nombre de archivo de salida (sin extensión)")
 
     args = parser.parse_args()
 

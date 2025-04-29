@@ -61,5 +61,14 @@
             {{ __('Cuenta Cuentos') }}
         </a>
     </li>
+
+    <li class="nav-item">
+        <a class="nav-link {{ request()->is('cuentacuentos*') ? 'active' : ''}}" href="{{ route('braille.index') }}">
+            <svg class="nav-icon">
+                <use xlink:href="{{ asset('icons/coreui.svg#cil-book') }}"></use> <!-- Elegí un ícono de libro, puedes cambiar -->
+            </svg>
+            {{ __('Lector y Conversor Braille') }}
+        </a>
+    </li>
     
 </ul>

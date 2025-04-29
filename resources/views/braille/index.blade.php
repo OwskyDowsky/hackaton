@@ -27,6 +27,7 @@
         <div class="mb-3">
             <label for="mode" class="form-label">Modo:</label>
             <select class="form-control" name="mode" id="modeSelect" required>
+                <option value="" selected disabled>Selecciona el modo</option>
                 <option value="voice">Lectura de voz 🎤</option>
                 <option value="braille">Conversión a Braille ⠃</option>
             </select>
@@ -46,11 +47,17 @@
             </select>
         </div>
 
-        <div class="d-flex gap-2">
+        <div id="outputNameContainer" class="mb-3" style="display: none;">
+            <label for="output_name" class="form-label">Nombre del archivo PDF de salida:</label>
+            <input class="form-control" type="text" name="output_name" placeholder="ej. mi_libro_braille">
+        </div>
+
+        <div class="d-flex gap-2 mb-3">
             <button type="submit" class="btn btn-primary" id="procesarBtn">Procesar</button>
             <button type="button" class="btn btn-danger" id="detenerBtnFormulario" style="display: none;">⛔ Detener lectura</button>
             <button type="button" class="btn btn-warning" id="pausarBtnFormulario" style="display: none;">⏸️ Pausar</button>
             <button type="button" class="btn btn-success" id="reanudarBtnFormulario" style="display: none;">▶️ Reanudar</button>
+            <a href="{{ route('braille.list') }}" class="btn btn-outline-secondary">📚 Ver archivos Braille</a>
         </div>
     </form>
 
@@ -58,7 +65,6 @@
         <div class="alert alert-info mt-4">
             <h5>Texto procesado:</h5>
             <pre id="textoProcesado">{{ session('output') }}</pre>
-
             <div class="d-flex gap-2 mt-2">
                 <button id="releerBtn" class="btn btn-secondary">🔁 Releer</button>
             </div>
@@ -67,13 +73,9 @@
 
     @if(session('pdf'))
         <div class="mt-4">
-            <a href="{{ asset(session('pdf')) }}" class="btn btn-success mb-2" download>
-                📥 Descargar PDF Braille
-            </a>
-
-            <a href="{{ route('braille.list') }}" class="btn btn-outline-secondary">
-                📚 Ver todos los libros Braille generados
-            </a>
+            <a href="{{ asset(session('pdf')) }}" class="btn btn-success mb-2" download>📥 Descargar PDF Braille</a>
+            <a href="{{ route('braille.list') }}" class="btn btn-outline-secondary">📚 Ver todos los libros Braille generados</a>
+            <a href="{{ route('braille.outputs') }}" class="btn btn-outline-info">📁 Ver archivos generados</a>
         </div>
     @endif
 
@@ -129,44 +131,61 @@
             }
         }
 
+        function enviarAccionPython(ruta, accion) {
+            console.log(`[INFO] Enviando acción: ${accion} a ${ruta}`);
+            fetch(ruta, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(`[✅ ${accion.toUpperCase()}] Respuesta recibida:`, data);
+            })
+            .catch(error => {
+                console.error(`[❌ ${accion.toUpperCase()}] Error al enviar:`, error);
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
+            const modeSelect = document.getElementById('modeSelect');
+            const voiceSelectorContainer = document.getElementById('voiceSelectorContainer');
+            const outputNameContainer = document.getElementById('outputNameContainer');
+
             if (typeof speechSynthesis !== 'undefined') {
                 cargarVoces();
                 speechSynthesis.onvoiceschanged = cargarVoces;
             }
 
-            const modeSelect = document.getElementById('modeSelect');
-            const voiceSelectorContainer = document.getElementById('voiceSelectorContainer');
-            const detenerBtnFormulario = document.getElementById('detenerBtnFormulario');
-            const pausarBtnFormulario = document.getElementById('pausarBtnFormulario');
-            const reanudarBtnFormulario = document.getElementById('reanudarBtnFormulario');
-
-            modeSelect.addEventListener('change', function() {
-                if (modeSelect.value === 'voice') {
-                    voiceSelectorContainer.style.display = 'block';
-                } else {
-                    voiceSelectorContainer.style.display = 'none';
-                }
+            modeSelect.addEventListener('change', function () {
+                const value = modeSelect.value;
+                voiceSelectorContainer.style.display = (value === 'voice') ? 'block' : 'none';
+                outputNameContainer.style.display = (value === 'braille') ? 'block' : 'none';
             });
 
-            document.getElementById('formulario').addEventListener('submit', function () {
-                if (modeSelect.value === 'voice') {
-                    detenerBtnFormulario.style.display = 'inline-block';
-                    pausarBtnFormulario.style.display = 'inline-block';
-                    reanudarBtnFormulario.style.display = 'inline-block';
+            document.getElementById('formulario').addEventListener('submit', function (e) {
+                if (!modeSelect.value) {
+                    e.preventDefault();
+                    alert('Por favor, selecciona un modo válido.');
                 }
             });
 
             document.getElementById('detenerBtnFormulario').addEventListener('click', function () {
                 detenerLectura();
+                enviarAccionPython('{{ route("braille.stop") }}', 'detener');
             });
 
             document.getElementById('pausarBtnFormulario').addEventListener('click', function () {
                 pausarLectura();
+                enviarAccionPython('{{ route("braille.pause") }}', 'pausar');
             });
 
             document.getElementById('reanudarBtnFormulario').addEventListener('click', function () {
                 reanudarLectura();
+                enviarAccionPython('{{ route("braille.resume") }}', 'reanudar');
             });
 
             @if(session('output'))
@@ -179,30 +198,6 @@
                 leerTexto(texto);
             });
         });
-
-        document.getElementById('detenerBtnFormulario')?.addEventListener('click', function () {
-    fetch('{{ route('braille.stop') }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({})
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'ok') {
-            console.log('[✅] Señal de detener enviada correctamente');
-        } else {
-            console.error('[❌] Error al detener:', data.message);
-        }
-    })
-    .catch(error => {
-        console.error('[❌] Fallo de red o servidor al detener:', error);
-    });
-});
-
     </script>
-    
 </div>
 @endsection
