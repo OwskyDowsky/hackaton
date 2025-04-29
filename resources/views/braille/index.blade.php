@@ -55,72 +55,16 @@
             <pre id="textoProcesado">{{ session('output') }}</pre>
             <button id="releerBtn" class="btn btn-secondary mt-2">🔁 Releer</button>
         </div>
+    @endif
 
-        <script>
-            let selectedVoice = null;
+    @if(session('pdf'))
+        <a href="{{ asset(session('pdf')) }}" class="btn btn-success mt-3" download>
+            📥 Descargar PDF Braille
+        </a>
 
-            function cargarVoces() {
-                const voices = speechSynthesis.getVoices();
-                const voiceSelect = document.getElementById('voiceSelect');
-                voiceSelect.innerHTML = '';
-
-                voices.forEach((voice, index) => {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = `${voice.name} (${voice.lang})`;
-                    voiceSelect.appendChild(option);
-                });
-
-                if (voices.length > 0) {
-                    selectedVoice = voices[0];
-                }
-
-                voiceSelect.addEventListener('change', () => {
-                    selectedVoice = voices[voiceSelect.value];
-                });
-            }
-
-            function leerTexto(texto) {
-                if (!selectedVoice) {
-                    console.error('No hay voz seleccionada.');
-                    return;
-                }
-                const utterance = new SpeechSynthesisUtterance(texto);
-                utterance.voice = selectedVoice;
-                utterance.rate = 1;
-                speechSynthesis.speak(utterance);
-            }
-
-            document.addEventListener('DOMContentLoaded', function () {
-                if (typeof speechSynthesis !== 'undefined') {
-                    cargarVoces();
-                    speechSynthesis.onvoiceschanged = cargarVoces;
-                }
-
-                const modeSelect = document.getElementById('modeSelect');
-                const voiceSelectorContainer = document.getElementById('voiceSelectorContainer');
-
-                modeSelect.addEventListener('change', function() {
-                    if (modeSelect.value === 'voice') {
-                        voiceSelectorContainer.style.display = 'block';
-                    } else {
-                        voiceSelectorContainer.style.display = 'none';
-                    }
-                });
-
-                // Auto leer al cargar si hay texto
-                @if(session('output'))
-                    const texto = document.getElementById('textoProcesado').textContent;
-                    setTimeout(() => { leerTexto(texto); }, 500);
-                @endif
-
-                // Botón para volver a leer
-                document.getElementById('releerBtn')?.addEventListener('click', function () {
-                    const texto = document.getElementById('textoProcesado').textContent;
-                    leerTexto(texto);
-                });
-            });
-        </script>
+        <a href="{{ route('braille.list') }}" class="btn btn-outline-secondary mt-3">
+            📂 Ver todos los PDFs generados
+        </a>
     @endif
 
     @if(session('console_log'))
@@ -129,11 +73,68 @@
         </script>
     @endif
 
-    @if(session('pdf'))
-    <a href="{{ asset(session('pdf')) }}" class="btn btn-success mt-2" download>
-        📥 Descargar PDF Braille
-    </a>
-@endif
+    <script>
+        let selectedVoice = null;
 
+        function cargarVoces() {
+            const voices = speechSynthesis.getVoices();
+            const voiceSelect = document.getElementById('voiceSelect');
+            voiceSelect.innerHTML = '';
+
+            voices.forEach((voice, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${voice.name} (${voice.lang})`;
+                voiceSelect.appendChild(option);
+            });
+
+            if (voices.length > 0) {
+                selectedVoice = voices[0];
+            }
+
+            voiceSelect.addEventListener('change', () => {
+                selectedVoice = voices[voiceSelect.value];
+            });
+        }
+
+        function leerTexto(texto) {
+            if (!selectedVoice) {
+                console.error('No hay voz seleccionada.');
+                return;
+            }
+            const utterance = new SpeechSynthesisUtterance(texto);
+            utterance.voice = selectedVoice;
+            utterance.rate = 1;
+            speechSynthesis.speak(utterance);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof speechSynthesis !== 'undefined') {
+                cargarVoces();
+                speechSynthesis.onvoiceschanged = cargarVoces;
+            }
+
+            const modeSelect = document.getElementById('modeSelect');
+            const voiceSelectorContainer = document.getElementById('voiceSelectorContainer');
+
+            modeSelect.addEventListener('change', function() {
+                if (modeSelect.value === 'voice') {
+                    voiceSelectorContainer.style.display = 'block';
+                } else {
+                    voiceSelectorContainer.style.display = 'none';
+                }
+            });
+
+            @if(session('output'))
+                const texto = document.getElementById('textoProcesado').textContent;
+                setTimeout(() => { leerTexto(texto); }, 500);
+            @endif
+
+            document.getElementById('releerBtn')?.addEventListener('click', function () {
+                const texto = document.getElementById('textoProcesado').textContent;
+                leerTexto(texto);
+            });
+        });
+    </script>
 </div>
 @endsection
