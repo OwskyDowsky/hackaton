@@ -3,6 +3,7 @@
 use App\Http\Controllers\CuentaCuentosController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\BrailleReaderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,8 @@ Route::get('/about', function () {
  */
 Auth::routes(['verify' => false]);
 
+Route::get('/braille-reader', [BrailleReaderController::class, 'index'])->name('braille.index');
+Route::post('/braille-reader/start', [BrailleReaderController::class, 'start'])->name('braille.start');
 
 Route::get('/cuentacuentos', [CuentaCuentosController::class, 'index'])->name('cuentacuentos.index');
 Route::post('/cuentacuentos/start', [CuentaCuentosController::class, 'start'])->name('cuentacuentos.start');
