@@ -4,21 +4,21 @@
             <svg class="nav-icon">
                 <use xlink:href="{{ asset('icons/coreui.svg#cil-speedometer') }}"></use>
             </svg>
-            {{ __('Dashboard') }}
+            {{ __('Inicio') }}
         </a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link {{ request()->is('users*') ? 'active' : ''}}" href="{{ route('users.index') }}">
+        <a class="nav-link {{ request()->is('users*') ? 'active' : '' }}" href="{{ route('users.index') }}">
             <svg class="nav-icon">
                 <use xlink:href="{{ asset('icons/coreui.svg#cil-user') }}"></use>
             </svg>
-            {{ __('Users') }}
+            {{ __('Usuarios') }}
         </a>
     </li>
 
     <li class="nav-item">
-        <a class="nav-link {{ request()->is('roles*') ? 'active' : ''}}" href="{{ route('roles.index') }}">
+        <a class="nav-link {{ request()->is('roles*') ? 'active' : '' }}" href="{{ route('roles.index') }}">
             <svg class="nav-icon">
                 <use xlink:href="{{ asset('icons/coreui.svg#cil-group') }}"></use>
             </svg>
@@ -27,15 +27,16 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link {{ request()->is('permissions*') ? 'active' : ''}}" href="{{ route('permissions.index') }}">
+        <a class="nav-link {{ request()->is('permissions*') ? 'active' : '' }}"
+            href="{{ route('permissions.index') }}">
             <svg class="nav-icon">
                 <use xlink:href="{{ asset('icons/coreui.svg#cil-room') }}"></use>
             </svg>
-            {{ __('Permissions') }}
+            {{ __('Permisos') }}
         </a>
     </li>
 
-    <li class="nav-group" aria-expanded="false">
+    {{--<li class="nav-group" aria-expanded="false">
         <a class="nav-link nav-group-toggle" href="#">
             <svg class="nav-icon">
                 <use xlink:href="{{ asset('icons/coreui.svg#cil-star') }}"></use>
@@ -52,14 +53,27 @@
                 </a>
             </li>
         </ul>
+    </li>--}}
+    <li class="nav-item">
+        <a class="nav-link {{ request()->is('cursos') ? 'active' : '' }}"
+            href="{{ route('cursos.index') }}">
+            <svg class="nav-icon">
+                <use xlink:href="{{ asset('icons/coreui.svg#cil-book') }}"></use>
+                <!-- Elegí un ícono de libro, puedes cambiar -->
+            </svg>
+            {{ __('Cursos') }}
+        </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {{ request()->is('cuentacuentos*') ? 'active' : ''}}" href="{{ route('cuentacuentos.index') }}">
+        <a class="nav-link {{ request()->is('cuentacuentos*') ? 'active' : '' }}"
+            href="{{ route('cuentacuentos.index') }}">
             <svg class="nav-icon">
-                <use xlink:href="{{ asset('icons/coreui.svg#cil-book') }}"></use> <!-- Elegí un ícono de libro, puedes cambiar -->
+                <use xlink:href="{{ asset('icons/coreui.svg#cil-book') }}"></use>
+                <!-- Elegí un ícono de libro, puedes cambiar -->
             </svg>
             {{ __('Cuenta Cuentos') }}
         </a>
     </li>
-    
+
+
 </ul>

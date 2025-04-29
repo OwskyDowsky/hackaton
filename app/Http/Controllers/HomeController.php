@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -23,8 +24,19 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $cantidadEstudiantes = User::role('Estudiantes')->count();
+        $cantidadProfesores = User::role('Profesores')->count();
+        $cantidadPadres = User::role('Padre de familia')->count();
+        $cantidadUsuarios = User::count(); // Todos los usuarios
+
+        return view('home', compact(
+            'cantidadEstudiantes',
+            'cantidadProfesores',
+            'cantidadPadres',
+            'cantidadUsuarios'
+        ));
     }
+
 
     public function about()
     {

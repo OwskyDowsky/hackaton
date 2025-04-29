@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\CeguerasEstudiantes;
+use App\Models\EstudiantesPadres;
+use App\Models\GradosProfesores;
+use App\Models\MateriasProfesores;
 
 /**
  *
@@ -21,7 +25,6 @@ class UsersController extends Controller
     public function index()
     {
         $users = User::latest()->paginate(10);
-
         return view('users.index', compact('users'));
     }
 
@@ -32,8 +35,12 @@ class UsersController extends Controller
      */
     public function create()
     {
-        return view('users.create');
+        $students = User::role('Estudiantes')->get(); // Obtener los estudiantes con rol 'Estudiantes'
+        $roles = Role::latest()->get(); // Obtener los roles disponibles
+
+        return view('users.create', compact('students', 'roles')); // Pasar los estudiantes y roles a la vista
     }
+
 
     /**
      * Store a newly created user
@@ -43,16 +50,57 @@ class UsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(User $user, StoreUserRequest $request)
+    public function store(StoreUserRequest $request)
     {
-        //For demo purposes only. When creating user or inviting a user
-        // you should create a generated random password and email it to the user
-        $user->create(array_merge($request->validated(), [
-            'password' => 'test'
+        // Crear el usuario con los datos validados
+        $user = User::create(array_merge($request->validated(), [
+            'password' => bcrypt('test')  // Recuerda usar una contraseña segura
         ]));
 
+        // Asignar el rol al usuario
+        if ($request->has('role') && $request->role) {
+            $user->assignRole($request->role);  // Asigna el rol por el ID
+        }
+
+        if ($request->role == 2 && $request->has('grades')) {
+            foreach ($request->grades as $grado) {
+                GradosProfesores::create([
+                    'usuario_id' => $user->id,
+                    'grado' => $grado
+                ]);
+            }
+        }
+
+        if ($request->role == 2 && $request->has('subjects')) {
+            foreach ($request->subjects as $materia) {
+                MateriasProfesores::create([
+                    'usuario_id' => $user->id,
+                    'materia' => $materia
+                ]);
+            }
+        }
+
+        if ($request->role == 1 && $request->has('disability')) {
+            foreach ($request->disability as $ceguera) {
+                CeguerasEstudiantes::create([
+                    'usuario_id' => $user->id,
+                    'ceguera' => $ceguera
+                ]);
+            }
+        }
+
+        if ($request->role == 3 && $request->has('students')) {
+            // Recorremos los estudiantes seleccionados por el padre
+            foreach ($request->students as $estudiante_id) {
+                EstudiantesPadres::create([
+                    'padre_id' => $user->id, // El ID del padre recién creado
+                    'estudiante_id' => $estudiante_id, // El ID del estudiante seleccionado
+                ]);
+            }
+        }
+
         return redirect()->route('users.index')
-            ->withSuccess(__('User created successfully.'));
+            ->withSuccess(__('Usuario creado con exito.'));
     }
 
     /**
@@ -78,10 +126,21 @@ class UsersController extends Controller
      */
     public function edit(User $user)
     {
+        // Obtener todos los roles
+        $roles = Role::all();
+
+        $students = [];
+        if ($user->hasRole('Padre de familia')) {
+            $students = User::whereHas('roles', function ($query) {
+                $query->where('name', 'Estudiantes');
+            })->get();
+        }
+
         return view('users.edit', [
             'user' => $user,
             'userRole' => $user->roles->pluck('name')->toArray(),
-            'roles' => Role::latest()->get()
+            'roles' => $roles, // Roles disponibles
+            'students' => $students, // Estudiantes disponibles
         ]);
     }
 
