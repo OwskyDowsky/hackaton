@@ -21,23 +21,26 @@ class CuentaCuentosController extends Controller
      */
     public function start()
     {
-        $output = [];
-        $retval = null;
+        try {
+            $pythonPath = 'C:/Users/urdin/AppData/Local/Programs/Python/Python311/python.exe'; 
+            $scriptPath = base_path('python_scripts/narrador.py');
+            $scriptPath = str_replace('/', '\\', $scriptPath);
 
-        $pythonPath = 'C:/Users/urdin/AppData/Local/Programs/Python/Python311/python.exe'; // Ajusta si cambias de máquina
-        $scriptPath = base_path('python_scripts/narrador.py');
-        $scriptPath = str_replace('/', '\\', $scriptPath);
+            // Limpiar el detente.flag antes de iniciar
+            $detentePath = storage_path('app/detente.flag');
+            if (file_exists($detentePath)) {
+                unlink($detentePath);
+            }
 
-        $command = "\"$pythonPath\" \"$scriptPath\" 2>&1";
+            // Lanzar en segundo plano en Windows
+            $command = "start /B \"\" \"$pythonPath\" \"$scriptPath\"";
 
-        exec($command, $output, $retval);
+            pclose(popen($command, 'r'));
 
-        if ($retval === 0) {
-            return back()->with('success', '¡La aventura fue completada exitosamente!');
-        } else {
-            $errorMessage = implode("\n", $output);
-            Log::error('Error al iniciar narrador: ' . $errorMessage);
-            return back()->with('error', 'No se pudo iniciar el narrador. Detalles: ' . $errorMessage);
+            return redirect()->route('cuentacuentos.index')->with('success', '¡La aventura comenzó! Puedes detenerla cuando quieras.');
+        } catch (\Exception $e) {
+            Log::error('Error al iniciar narrador: ' . $e->getMessage());
+            return redirect()->route('cuentacuentos.index')->with('error', 'No se pudo iniciar el narrador. Error: ' . $e->getMessage());
         }
     }
 
@@ -48,14 +51,13 @@ class CuentaCuentosController extends Controller
     {
         try {
             $detentePath = storage_path('app/detente.flag');
-
-            // Crear el archivo bandera que Python detecta para detener
             file_put_contents($detentePath, 'detente');
-
-            return back()->with('success', 'Se envió la orden para detener la historia.');
+    
+            return redirect()->route('cuentacuentos.index')->with('success', 'Narrador detenido exitosamente. ¡Te esperamos en otra aventura!');
         } catch (\Exception $e) {
             Log::error('Error al intentar detener la historia: ' . $e->getMessage());
-            return back()->with('error', 'No se pudo detener la historia. Error: ' . $e->getMessage());
+            return redirect()->route('cuentacuentos.index')->with('error', 'No se pudo detener la historia. Error: ' . $e->getMessage());
         }
     }
+    
 }

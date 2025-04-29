@@ -1,74 +1,106 @@
 {
-    "inicio": {
-      "texto": "Despiertas en un bosque encantado. Escuchas aves mágicas y el susurro del viento. Si quieres empezar la aventura, di 'caminar'. Si prefieres quedarte donde estás, di 'esperar'. ¿Qué decides?",
-      "sonido": "cuentacuentos_audio/bosque_magico.mp3",
-      "opciones": {
-        "caminar": "seguir_caminando",
-        "esperar": "final_perdido"
-      }
-    },
-    "seguir_caminando": {
-      "texto": "Caminas entre árboles de colores brillantes. Más adelante, ves una cueva misteriosa. Si deseas entrar a la cueva, di 'entrar'. Si prefieres seguir caminando y evitarla, di 'ignorar'. ¿Qué quieres hacer?",
-      "sonido": "cuentacuentos_audio/caminata_bosque.mp3",
-      "opciones": {
-        "entrar": "investigar_cueva",
-        "ignorar": "ignorar_cueva"
-      }
-    },
-    "investigar_cueva": {
-      "texto": "Te adentras en la cueva oscura. Hace frío y escuchas gotear el agua. Encuentras un cofre dorado. Si quieres abrir el cofre, di 'abrir cofre'. Si tienes miedo y prefieres no abrirlo, di 'no abrir'. ¿Qué decides?",
-      "sonido": "cuentacuentos_audio/cueva.mp3",
-      "opciones": {
-        "abrir cofre": "abrir_cofre",
-        "no abrir": "final_perdido"
-      }
-    },
-    "ignorar_cueva": {
-      "texto": "Decides rodear la cueva. Más adelante descubres un río brillante que parece estar iluminado por estrellas. Si quieres seguir el río, di 'seguir río'. Si prefieres quedarte, di 'no seguir'. ¿Qué haces?",
-      "sonido": "cuentacuentos_audio/rio.mp3",
-      "opciones": {
-        "seguir río": "seguir_rio",
-        "no seguir": "final_perdido"
-      }
-    },
-    "abrir_cofre": {
-      "texto": "¡Encuentras un antiguo mapa mágico que muestra el camino hacia un castillo escondido! Si quieres seguir el mapa y buscar el castillo, di 'seguir mapa'.",
-      "sonido": "cuentacuentos_audio/abrir_cofre.mp3",
-      "opciones": {
-        "seguir mapa": "final_castillo"
-      }
-    },
-    "seguir_rio": {
-      "texto": "Sigues el curso del río y llegas a una aldea llena de duendes sonrientes. Si quieres hablar con los duendes, di 'hablar duendes'. Si prefieres no detenerte y seguir tu camino, di 'seguir solo'.",
-      "sonido": "cuentacuentos_audio/aldea_duendes.mp3",
-      "opciones": {
-        "hablar duendes": "hablar_duendes",
-        "seguir solo": "ignorar_duendes"
-      }
-    },
-    "hablar_duendes": {
-      "texto": "Los duendes celebran tu llegada. Te entregan una llave dorada que abrirá las puertas del castillo mágico. Si quieres dirigirte al castillo, di 'ir al castillo'.",
-      "sonido": "cuentacuentos_audio/duendes_hablando.mp3",
-      "opciones": {
-        "ir al castillo": "final_castillo"
-      }
-    },
-    "ignorar_duendes": {
-      "texto": "Decides no detenerte. El bosque se torna más oscuro y denso, pero a lo lejos logras ver el castillo iluminado. Si quieres acercarte, di 'ir al castillo'.",
-      "sonido": "cuentacuentos_audio/camino_solitario.mp3",
-      "opciones": {
-        "ir al castillo": "final_castillo"
-      }
-    },
-    "final_castillo": {
-      "texto": "¡Llegas al castillo mágico! Una gran fiesta te espera en honor a tu valentía. Hay música, luces y magia en el aire. ¡Has completado tu aventura!",
-      "sonido": "cuentacuentos_audio/castillo_fiesta.mp3",
-      "opciones": {}
-    },
-    "final_perdido": {
-      "texto": "Te pierdes en el bosque y, aunque te sientes un poco triste, sabes que pronto vivirás nuevas aventuras mágicas. ¡Hasta la próxima!",
-      "sonido": "cuentacuentos_audio/bosque.mp3",
-      "opciones": {}
+  "introduccion": {
+    "texto": "¡Hola! Soy tu narradora mágica. Este es un cuento encantado donde tú decides lo que sucede. Solo necesitas hablar. Por ejemplo, cuando te pregunte, puedes decir 'caminar', 'esperar', o lo que escuches. Y si en algún momento quieres salir, solo di 'detente'. ¿Listo para comenzar? Entonces di: empezar.",
+    "sonido": "cuentacuentos_audio/aldea.mp3",
+    "opciones": {
+      "empezar": "inicio"
     }
+  },
+  "inicio": {
+    "texto": "Abres los ojos y te encuentras en un bosque mágico. Escuchas aves cantar, hojas crujir y un suave viento. Si quieres explorar, di 'caminar'. Si prefieres descansar bajo un árbol, di 'esperar'.",
+    "sonido": "cuentacuentos_audio/bosque_magico.mp3",
+    "opciones": {
+      "caminar": "camino_bifurcado",
+      "esperar": "final_descanso"
+    }
+  },
+  "camino_bifurcado": {
+    "texto": "Caminas feliz por un sendero florido. Pronto, el camino se divide en dos. A la izquierda, una cueva oscura. A la derecha, un claro brillante. ¿Quieres ir a la 'cueva' o al 'claro'?",
+    "sonido": "cuentacuentos_audio/caminata_bosque.mp3",
+    "opciones": {
+      "cueva": "cueva_misteriosa",
+      "claro": "claro_magico"
+    }
+  },
+  "cueva_misteriosa": {
+    "texto": "La cueva está fría y huele a piedra mojada. Escuchas el goteo del agua. Al fondo, hay un cofre dorado. Puedes decir 'abrir' para descubrir qué hay, o 'salir' si tienes miedo.",
+    "sonido": "cuentacuentos_audio/cueva.mp3",
+    "opciones": {
+      "abrir": "cofre_magico",
+      "salir": "final_perdido"
+    }
+  },
+  "claro_magico": {
+    "texto": "El claro es cálido y lleno de mariposas. Una criatura parecida a un ciervo con alas se acerca. Si decides seguirla, di 'seguir'. Si prefieres quedarte, di 'quedarse'.",
+    "sonido": "cuentacuentos_audio/claro_magico.mp3",
+    "opciones": {
+      "seguir": "seguir_criatura",
+      "quedarse": "final_duendes"
+    }
+  },
+  "cofre_magico": {
+    "texto": "Al abrir el cofre, encuentras un mapa brillante con el camino a un castillo escondido. Si quieres seguirlo, di 'castillo'.",
+    "sonido": "cuentacuentos_audio/abrir_cofre.mp3",
+    "opciones": {
+      "castillo": "puente_duende"
+    }
+  },
+  "seguir_criatura": {
+    "texto": "Sigues a la criatura hasta un río brillante. Puedes caminar junto al río diciendo 'río', o construir una balsa diciendo 'balsa'.",
+    "sonido": "cuentacuentos_audio/seguir_criatura.mp3",
+    "opciones": {
+      "río": "aldea_duendes",
+      "balsa": "final_balsa"
+    }
+  },
+  "puente_duende": {
+    "texto": "Llegas a un puente de piedra custodiado por un duende amable. Él te sonríe y te deja pasar si respondes con alegría. Solo di 'pasar'.",
+    "sonido": "cuentacuentos_audio/puente_duende.mp3",
+    "opciones": {
+      "pasar": "final_castillo"
+    }
+  },
+  "aldea_duendes": {
+    "texto": "Llegas a una aldea secreta de duendes que celebran tu llegada con risas y música. Puedes unirte a su fiesta diciendo 'fiesta', o seguir caminando diciendo 'caminar'.",
+    "sonido": "cuentacuentos_audio/aldea_duendes.mp3",
+    "opciones": {
+      "fiesta": "final_fiesta",
+      "caminar": "final_misterio"
+    }
+  },
+  "final_castillo": {
+    "texto": "Cruzas el puente y llegas al castillo mágico. Luces de colores, música y criaturas mágicas te esperan. Has completado la aventura con valentía. ¡Felicidades!",
+    "sonido": "cuentacuentos_audio/castillo_fiesta.mp3",
+    "opciones": {}
+  },
+  "final_perdido": {
+    "texto": "Sales de la cueva con miedo y sin rumbo. El bosque se oscurece y te sientes un poco triste, pero sabes que nuevas historias te esperan otro día.",
+    "sonido": "cuentacuentos_audio/bosque.mp3",
+    "opciones": {}
+  },
+  "final_fiesta": {
+    "texto": "Te unes a los duendes. Hay dulces, luces y canciones. Te sientes feliz y seguro. Aquí termina tu aventura mágica, por hoy.",
+    "sonido": "cuentacuentos_audio/castillo_fiesta.mp3",
+    "opciones": {}
+  },
+  "final_misterio": {
+    "texto": "Sigues caminando, pero el sendero se pierde entre la niebla. Tal vez otra aventura te aguarde. Por ahora, es hora de descansar.",
+    "sonido": "cuentacuentos_audio/bosque.mp3",
+    "opciones": {}
+  },
+  "final_balsa": {
+    "texto": "Construyes una balsa, pero el río es muy fuerte. Aun así, flotas hasta la orilla. Tal vez hoy no llegues al castillo, pero aprendiste a intentarlo.",
+    "sonido": "cuentacuentos_audio/balsa.mp3",
+    "opciones": {}
+  },
+  "final_duendes": {
+    "texto": "Te quedas en el claro y pronto los duendes salen a saludarte. Te invitan a vivir con ellos, y juntos cuidan el bosque. Un final lleno de amistad.",
+    "sonido": "cuentacuentos_audio/aldea_duendes.mp3",
+    "opciones": {}
+  },
+  "final_descanso": {
+    "texto": "Decides descansar bajo un árbol. El sol calienta tu rostro y sueñas con mundos mágicos. Tal vez mañana, una nueva historia comience.",
+    "sonido": "cuentacuentos_audio/bosque.mp3",
+    "opciones": {}
   }
-  
+}
